@@ -14,6 +14,7 @@ const CITIES = [
   { city: "India", timeZone: "Asia/Chennai" },
   { city: "Malaysia", timeZone: "Asia/Kuala_Lumpur" },
   { city: "Japan", timeZone: "Asia/Tokyo" },
+  { city: "Sydney", timeZone: "Australia/Sydney" },
 ];
 
 const dateInput = document.querySelector("#sf-date");
