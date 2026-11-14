@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>World clock</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <header class="page-header">
+      <h1>Zaahid's World clock</h1>
+      <p>
+        Pick a date and time in San Francisco. California. The other clocks show that
+        same moment. The date is shown too, because some cities are already
+        on the next day.
+      </p>
+    </header>
+
+    <!-- San Francisco is the input. The clock beside the form shows what you picked. -->
+    <section class="source" aria-labelledby="sf-heading">
+      <div class="controls">
+        <h2 id="sf-heading">San Francisco</h2>
+        <p class="zone">America/Los_Angeles</p>
+        <form id="sf-form" class="fields">
+          <label>
+            Date
+            <input id="sf-date" type="date" required>
+          </label>
+          <label>
+            Time
+            <input id="sf-time" type="time" step="1" required>
+          </label>
+          <button id="now-button" type="button">Now</button>
+        </form>
+        <!-- Filled in only when daylight saving makes the chosen time special. -->
+        <p id="sf-note" class="note" hidden></p>
+      </div>
+      <div id="sf-clock"></div>
+    </section>
+
+    <section aria-labelledby="cities-heading">
+      <h2 id="cities-heading">The same moment in other cities</h2>
+      <div id="cities" class="grid"></div>
+    </section>
+  </main>
+
+  <!-- At the end of the body, so the HTML above already exists when this runs. -->
+  <script src="clock.js"></script>
+</body>
+</html>

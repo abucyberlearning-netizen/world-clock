@@ -1,0 +1,285 @@
+/* Simple layout for the world clock. Colors and type are all local — no web fonts. */
+
+:root {
+  --ink: #1a2332;
+  --muted: #5c6b7a;
+  --line: #d5dee6;
+  --paper: #e7eef2;
+  --card: #ffffff;
+  --teal: #0f6e69;
+  --teal-dark: #0b5854;
+  --second: #d4522a;
+  --next: #9a4310;
+  --next-bg: #fff1e4;
+  --prev: #1d4e89;
+  --prev-bg: #e7f0fa;
+  --note: #6d4a16;
+  --note-bg: #fff6e8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  background:
+    radial-gradient(900px 420px at 0% -10%, #ffffff 0%, transparent 60%),
+    var(--paper);
+  font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  line-height: 1.45;
+}
+
+main {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 36px 20px 64px;
+}
+
+h1, h2, h3 {
+  font-family: Georgia, "Iowan Old Style", Palatino, serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: clamp(2.1rem, 5vw, 3.3rem);
+}
+
+h2 {
+  margin: 0 0 6px;
+  font-size: 1.55rem;
+}
+
+.page-header p {
+  max-width: 38rem;
+  margin: 0 0 28px;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+.source {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(220px, 0.7fr);
+  gap: 12px 28px;
+  align-items: center;
+  margin-bottom: 36px;
+  padding: 24px;
+  background: var(--card);
+  border-radius: 22px;
+  box-shadow: 0 12px 32px rgba(26, 35, 50, 0.06);
+}
+
+.zone {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: end;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+input[type="date"],
+input[type="time"] {
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--ink);
+  background: #fff;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+input:focus-visible,
+button:focus-visible {
+  outline: 3px solid #e2b15a;
+  outline-offset: 2px;
+}
+
+button {
+  padding: 0.62rem 1.15rem;
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  background: var(--teal);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--teal-dark);
+}
+
+.note {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: var(--note);
+  background: var(--note-bg);
+  font-size: 0.92rem;
+}
+
+#cities-heading {
+  margin-bottom: 14px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 16px;
+}
+
+.city {
+  padding: 16px 14px 18px;
+  text-align: center;
+  background: var(--card);
+  border-radius: 18px;
+  box-shadow: 0 10px 26px rgba(26, 35, 50, 0.05);
+  border-top: 4px solid var(--accent, var(--teal));
+}
+
+/* A quiet accent so the cities are easy to tell apart. */
+.city:nth-child(5n + 1) { --accent: #1d4e89; }
+.city:nth-child(5n + 2) { --accent: #6b3a6a; }
+.city:nth-child(5n + 3) { --accent: #c45c26; }
+.city:nth-child(5n + 4) { --accent: #0e7490; }
+.city:nth-child(5n + 5) { --accent: #9b2335; }
+
+.source .city {
+  --accent: var(--teal);
+  box-shadow: none;
+  padding-top: 8px;
+}
+
+.city h3 {
+  margin: 8px 0 0;
+  font-size: 1.35rem;
+}
+
+.city .zone {
+  margin: 2px 0 8px;
+  word-break: break-word;
+}
+
+.digital {
+  margin: 0;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 1.45rem;
+  letter-spacing: -0.03em;
+}
+
+.abbr {
+  display: block;
+  min-height: 1.2em;
+  margin-top: 2px;
+  color: var(--muted);
+  font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  font-size: 0.82rem;
+  letter-spacing: 0;
+}
+
+.date {
+  margin: 8px 0 0;
+  font-size: 0.95rem;
+}
+
+.shift {
+  min-height: 1.5em;
+  margin: 8px 0 0;
+}
+
+.shift.next,
+.shift.prev {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.shift.next {
+  color: var(--next);
+  background: var(--next-bg);
+}
+
+.shift.prev {
+  color: var(--prev);
+  background: var(--prev-bg);
+}
+
+/* Analog clock drawn as SVG. The hands are rotated from JavaScript. */
+.clock svg {
+  display: block;
+  width: min(100%, 190px);
+  height: auto;
+  margin: 0 auto;
+}
+
+.face {
+  fill: #fbfcfe;
+  stroke: var(--line);
+  stroke-width: 1.5;
+}
+
+.tick {
+  stroke: #9aa8b5;
+  stroke-width: 1.2;
+  stroke-linecap: round;
+}
+
+.tick.major {
+  stroke: var(--ink);
+  stroke-width: 1.7;
+}
+
+.clock text {
+  fill: var(--ink);
+  font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  font-size: 7px;
+  font-weight: 700;
+}
+
+.hand {
+  stroke: var(--ink);
+  stroke-linecap: round;
+}
+
+.hand.hour { stroke-width: 2.8; }
+.hand.minute { stroke-width: 1.8; }
+.hand.second { stroke: var(--second); stroke-width: 1.15; }
+
+.pin {
+  fill: var(--second);
+}
+
+@media (max-width: 720px) {
+  main {
+    padding-top: 24px;
+  }
+
+  .source {
+    grid-template-columns: 1fr;
+    padding: 18px;
+  }
+
+  .digital {
+    font-size: 1.3rem;
+  }
+}
