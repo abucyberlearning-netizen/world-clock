@@ -1,0 +1,87 @@
+# Security checks that run automatically on every Pull Request to main.
+# If any check fails, GitHub shows a red X and (once we turn on the rule) blocks the merge.
+
+name: security-checks
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# Least privilege: by default the checks can only READ the code.
+permissions:
+  contents: read
+
+jobs:
+  # Check 1: look for passwords, API keys and tokens in the code and its history.
+  secret-scan:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download the code (with full history)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Install gitleaks (and verify the download is genuine)
+        run: |
+          curl -sSLo gitleaks.tgz https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz
+          echo "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  gitleaks.tgz" | sha256sum -c -
+          tar xzf gitleaks.tgz gitleaks
+      - name: Scan for secrets
+        run: ./gitleaks git . --redact --verbose
+
+  # Check 2: GitHub's code scanner looks for security bugs in the JavaScript.
+  code-scan:
+    name: Code security scan (CodeQL)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write   # allowed to post findings to the Security tab
+    steps:
+      - name: Download the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Start CodeQL
+        uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          languages: javascript-typescript
+          queries: security-extended
+      - name: Analyze
+        uses: github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+
+  # Check 3: our own rule. The page must not load scripts from other websites,
+  # because if that website is hacked, our page runs the hacker's code.
+  no-outside-scripts:
+    name: No scripts from the internet
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Look for <script src="http...">
+        run: |
+          if grep -nEi '<script[^>]*src="?https?:' ./*.html; then
+            echo "::error::Found a script loaded from the internet. Copy it into the repo instead."
+            exit 1
+          fi
+          echo "OK: no outside scripts found."
+
+  # Check 4: the page must declare a Content Security Policy (CSP).
+  # CSP tells the browser which scripts may run. Even if an attacker manages to
+  # sneak a script into the page, the browser refuses to run it.
+  csp-present:
+    name: Content Security Policy present
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Check index.html has a CSP that only allows our own scripts
+        run: |
+          if ! grep -qi 'http-equiv="Content-Security-Policy"' index.html; then
+            echo "::error file=index.html::No Content Security Policy found. Add the CSP <meta> tag inside <head>."
+            exit 1
+          fi
+          if ! grep -qi "script-src 'self'" index.html; then
+            echo "::error file=index.html::The CSP must include script-src 'self'."
+            exit 1
+          fi
+          echo "OK: Content Security Policy found."
